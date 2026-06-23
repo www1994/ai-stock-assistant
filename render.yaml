@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ai-stock-assistant
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 180
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o
+      - key: ENABLE_SCHEDULER
+        value: "true"
+      - key: TZ
+        value: Asia/Shanghai
