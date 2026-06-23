@@ -16,7 +16,7 @@ function setToday() {
   });
   $("#todayText").textContent = text;
 
-  const hour = Number(now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour: "2-digit", hour12: false }));
+  const hour = Number((now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour: "2-digit", hour12: false }).match(/\d+/) || ["0"])[0]);
   let mode = "盘前";
   if (hour >= 15) mode = "盘后";
   if (hour >= 9 && hour < 15) mode = "盘中";
