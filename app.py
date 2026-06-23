@@ -131,7 +131,7 @@ def call_openai_json(prompt: str, fallback: dict[str, Any] | list[Any]) -> dict[
         return fallback
 
     try:
-        client = OpenAI()
+        client = OpenAI(timeout=20, max_retries=0)
         response = client.responses.create(
             model=OPENAI_MODEL,
             input=[
