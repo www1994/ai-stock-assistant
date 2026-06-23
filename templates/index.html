@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f14">
+  <title>AI炒股助手</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyeline" id="todayText">加载中</p>
+        <h1>AI炒股助手</h1>
+      </div>
+      <div class="status-pill" id="aiStatus">{{ "AI已连接" if ai_enabled else "未配置AI" }}</div>
+    </header>
+
+    <section class="market-strip">
+      <div>
+        <span>模式</span>
+        <strong id="marketMode">自动判断</strong>
+      </div>
+      <div>
+        <span>模型</span>
+        <strong>{{ model }}</strong>
+      </div>
+      <div>
+        <span>范围</span>
+        <strong>60 / 000</strong>
+      </div>
+    </section>
+
+    <section class="panel primary-panel">
+      <div class="panel-head">
+        <div>
+          <h2>盘前资讯</h2>
+          <p id="preUpdated">每天9点前自动更新</p>
+        </div>
+        <button class="icon-button" id="refreshPre" aria-label="刷新盘前资讯">刷</button>
+      </div>
+      <p class="summary" id="preSummary">正在读取财联社和新浪财经。</p>
+      <div class="tag-row" id="sectorTags"></div>
+      <div class="signal-grid">
+        <div>
+          <span>利好</span>
+          <strong id="positiveCount">0</strong>
+        </div>
+        <div>
+          <span>利空</span>
+          <strong id="negativeCount">0</strong>
+        </div>
+        <div>
+          <span>个股</span>
+          <strong id="stockCount">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="action-row">
+      <button class="action-button" id="runScreen">盘中选股</button>
+      <button class="action-button muted" id="runAfter">盘后复盘</button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>盘中选股</h2>
+          <p id="screenUpdated">手动点击触发</p>
+        </div>
+        <select id="sortSelect" aria-label="排序方式">
+          <option value="main_flow">按主力流入</option>
+          <option value="change">按涨幅</option>
+        </select>
+      </div>
+      <div class="stock-list" id="stockList">
+        <div class="empty-state">点击“盘中选股”开始筛选。</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>盘后复盘</h2>
+          <p id="afterUpdated">15:30 后可用</p>
+        </div>
+      </div>
+      <div id="afterContent" class="review-block">
+        等待盘后数据。
+      </div>
+    </section>
+
+    <section class="warning-panel" id="warningPanel">
+      <strong>风险提示</strong>
+      <p>仅供复盘和学习，不构成投资建议。严格限制60或000主板，禁止ST、创业板、科创板、北交所。</p>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
