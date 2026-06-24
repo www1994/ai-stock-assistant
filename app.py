@@ -23,6 +23,8 @@ CACHE_FILE = BASE_DIR / "data" / "cache.json"
 CN_TZ = ZoneInfo("Asia/Shanghai")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 MAX_SCREEN_RESULTS = int(os.getenv("MAX_SCREEN_RESULTS", "8"))
+MAX_TECH_CHECKS = int(os.getenv("MAX_TECH_CHECKS", "25"))
+MAX_SCREEN_SECONDS = int(os.getenv("MAX_SCREEN_SECONDS", "85"))
 
 app = Flask(__name__)
 scheduler_instance: BackgroundScheduler | None = None
@@ -461,6 +463,7 @@ def add_ai_comments(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def run_screen(sort: str = "main_flow") -> dict[str, Any]:
+    started_at = now_cn()
     warnings: list[str] = []
     spot_df, err = safe_fetch(ak.stock_zh_a_spot_em, timeout=25)
     if err or spot_df is None or spot_df.empty:
@@ -498,9 +501,12 @@ def run_screen(sort: str = "main_flow") -> dict[str, Any]:
             "warnings": warnings or ["按当前严格条件未筛出股票，可放宽龙虎榜或营收条件后再看。"],
         }
 
-    seed = candidates.sort_values("main_net_inflow", ascending=False).head(80)
+    seed = candidates.sort_values("main_net_inflow", ascending=False).head(MAX_TECH_CHECKS)
     rows: list[dict[str, Any]] = []
     for _, row in seed.iterrows():
+        if (now_cn() - started_at).total_seconds() > MAX_SCREEN_SECONDS:
+            warnings.append("盘中筛选已到免费服务器时间上限，仅返回已完成结果。")
+            break
         tech, tech_err = technical_check(row["code"])
         if tech_err:
             continue
